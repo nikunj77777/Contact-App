@@ -6,6 +6,7 @@ class ContactInfo{
         this.email=email;
     }
     updateContactInfo(parameter, newValue) {
+    try{
         switch (parameter) {
             case "phoneNumber":
                 this.phoneNumber = newValue
@@ -14,8 +15,12 @@ class ContactInfo{
                 this.email = newValue
                 return this;
             default:
-                return "Invalid Parameter"
+                throw new Validation("Not a Valid Parameter")
         }
+    }
+    catch(e){
+        throw e
+    }
     }
     
 }

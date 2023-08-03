@@ -1,4 +1,8 @@
 const ContactInfo = require("./ContactInfo")
+const Validation=require("./Error/Validation.js")
+const UnAuthorized=require("./Error/UnAuthorized.js")
+const NotFound=require("./Error/NotFound.js")
+
 
 class Contact {
     static ID = 0
@@ -10,6 +14,7 @@ class Contact {
     }
 
     updateContact(parameter, newValue){
+    try{
         switch (parameter){
             case "contactName":
                 this.contactName = newValue
@@ -18,8 +23,12 @@ class Contact {
                 this.country = newValue
                 return this
             default:
-                 return "Invalid Parameter"
+                throw new Validation("Not a Valid Parameter")
         }
+    }
+    catch(e){
+        throw e
+    }
     }
     createContactInfo(phoneNumber,email){
         let contactInfoObj=new ContactInfo(phoneNumber,email)
@@ -30,35 +39,45 @@ class Contact {
         return this.contactInfos
     }
     findContactInfo(contactID){
+    try{
         for (let index = 0; index < this.contactInfos.length; index++){
             if(this.contactInfos[index].ID == contactID) {
-                return [index, true]
+                return index
             }
         }
-        return[-1,false]
+        throw new NotFound("ID not Found")
+    }
+    catch(e){
+        throw e
+    }
     }
     updateContactInfos(contactInfoID,parameter,value){
-        let[indexOfContact,isContactInfo]=this.findContactInfo(contactInfoID)
-        if(!isContactInfo){
-            return "Contact  does not exist"
-        }
+    try{
+        let indexOfContact=this.findContactInfo(contactInfoID)
         return this.contactInfos[indexOfContact].updateContactInfo(parameter,value)
     }
+    catch(e){
+        throw e
+    }
+    }
     deleteContactInfo(contactInfoID){
-        
-        let[indexOfContact, isContact]=this.findContactInfo(contactInfoID)
-        if(!isContact){
-            return "No contact found. Contact does not exist";
-        }
+    try{
+        let indexOfContact=this.findContactInfo(contactInfoID)
         this.contactInfos.splice(indexOfContact,1)
         return Contact.contactInfos
     }
+    catch(e){
+        throw e
+    }
+    }
     getContactInfoById(ID){
-        let [indexOfUser, isContactInfo] = this.findContactInfo(ID)
-        if(!isContactInfo){
-            return "Contact Information Not Found"
-        }
+    try{
+        let indexOfUser = this.findContactInfo(ID)
         return this.contactInfos[indexOfUser]
+    }
+    catch(e){
+        throw e
+    }
     }
 }
 

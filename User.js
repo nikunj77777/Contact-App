@@ -1,5 +1,7 @@
 const Contact = require("./Contact.js")
-const ContactInfo = require("./ContactInfo.js")
+const Validation=require("./Error/Validation.js")
+const UnAuthorized=require("./Error/UnAuthorized.js")
+const NotFound=require("./Error/NotFound.js")
 
 class User {
     static allUsers = []
@@ -13,61 +15,87 @@ class User {
         this.contacts = []
     }
     newUser(fullName, gender, age) {
+    try{
         if (typeof fullName != "string") {
-            return "Invalid Name"
+            throw new Validation("Not a String Value")
         }
         if (typeof gender != "string") {
-            return "Invalid Gender"
+            throw new Validation("Not a String Value")
         }
         if (typeof age != "number") {
-            return "Invalid age"
+            throw new Validation("Not an Integer Value")
         }
         if (!this.isAdmin) {
-            return "Not Authorized"
+            throw new UnAuthorized("Not an Admin")
         }
         let userObj = new User(fullName, false, gender, age)
         User.allUsers.push(userObj)
         return userObj
     }
+    catch(e){
+        console.log(e)
+    }
+
+    }
 
     static newAdmin(fullName, gender, age) {
+    try{
         if (typeof fullName != "string") {
-            return "Invalid Name"
+            throw new Validation("Not a String Value")
         }
         if (typeof gender != "string") {
-            return "Invalid Gender"
+            throw new Validation("Not a String Value")
         }
         if (typeof age != "number") {
-            return "Invalid age"
+            throw new Validation("Not an Integer Value")
         }
         return new User(fullName, true, gender, age)
     }
+    catch(e){
+        console.log(e)
+    }
+
+    }
     getAllUsers() {
+    try{
         if (!this.isAdmin) {
-            return "Not Authorized"
+            throw new UnAuthorized("Not an Admin")
         }
         return User.allUsers
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     static findUser(ID) {
+    try{
+        if (typeof ID != "number") {
+            throw new Validation("Not an Integer Value")
+        } 
         for (let index = 0; index < User.allUsers.length; index++) {
             if (ID == User.allUsers[index].ID) {
                 console.log("User.allUsers[index]", User.allUsers[index].ID);
-                return [index, true]
+                return index
             }
         }
-        return [-1, false]
+        throw new NotFound("ID not Found")
+    }
+    catch(e){
+        console.log(e)
+    }
     }
     updateUser(ID, parameter, newValue) {
+    try{
         if (typeof ID != "number") {
-            return "Invalid Id"
+            throw new Validation("Not an Integer Value")
+        }
+        if(typeof parameter!="string"){
+            throw new Validation("Not a String Value")
         }
         if (!this.isAdmin) {
-            return "Not Authorised"
+            throw new UnAuthorized("Not an Admin")
         }
-        let [indexOfUser, isUserExist] = User.findUser(ID)
-        if (!isUserExist) {
-            return "User not found"
-        }
+        let indexOfUser = User.findUser(ID)
         switch (parameter) {
             case "fullName":
                 User.allUsers[indexOfUser].fullName = newValue
@@ -79,141 +107,219 @@ class User {
                 User.allUsers[indexOfUser].age = newValue
                 return User.allUsers[indexOfUser]
             default:
-                return "Invalid Parameter"
+                throw new Validation("Not a Valid Parameter")
         }
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     deleteUser(ID) {
-        if (typeof ID != "number") {
-            return "Invalid Id"
-        }
-        let [indexOfUser, isUserExist] = User.findUser(ID)
-        if (!isUserExist) {
-            return "User not found"
-        }
+    try{
+            if (typeof ID != "number") {
+                throw new Validation("Not an Integer Value")
+            }
+        let indexOfUser = User.findUser(ID)
         User.allUsers.splice(indexOfUser, 1)
         return User.allUsers
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     createContact(contactName, country) {
+    try{
+        if (typeof contactName != "string") {
+            throw new Validation("Not a String Value")
+        }
+        if (typeof country != "string") {
+            throw new Validation("Not a String Value")
+        }  
         if (this.isAdmin) {
-            return "Admin cannot create Contact"
+            throw new UnAuthorized("Only User can Access this method")
         }
         let contactObj = new Contact(contactName, country)
         this.contacts.push(contactObj)
         return contactObj
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     getAllContact() {
+    try{
         if (this.isAdmin) {
-            return "Admin does not have Contacts"
+            throw new UnAuthorized("Only User can Access this method")
         }
         return this.contacts
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     findContact(contactID) {
+    try{
+        if(typeof contactID!="number"){
+            throw new Validation("Not an Integer Value")
+        }
         for (let index = 0; index < this.contacts.length; index++) {
             if (this.contacts[index].ID == contactID) {
                 return [index, true]
             }
         }
-        return [-1, false]
+        throw new NotFound("ID not Found")
+    }
+    catch(e){
+        console.log(e)
+    }
     }
     updateContact(contactID, parameter, newValue) {
-        let [indexOfContact, isContact] = this.findContact(contactID)
-        if (!isContact) {
-            return "Contact  does not exist"
+    try{
+        if(typeof contactID!="number"){
+            throw new Validation("Not an Integer Value")
         }
+        if(typeof parameter!="string"){
+            throw new Validation("Not a String Value")
+        }
+        if(typeof newValue!="string"){
+            throw new Validation("Not a String Value")
+        }
+        let indexOfContact = this.findContact(contactID)
         return this.contacts[indexOfContact].updateContact(parameter, newValue)
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     deleteContact(contactID) {
+    try{
         if (this.isAdmin) {
-            return "Only user can delete contact!"
+            throw new UnAuthorized("Only User can Access this method")
         }
         if (typeof contactID != 'number') {
-            return "Invalid contactID passed!"
+            throw new Validation("Not an Integer Value")
         }
-        let [indexOfContact, isContact] = this.findContact(contactID)
-        if (!isContact) {
-            return "No contact found. Contact does not exist";
-        }
+        let indexOfContact = this.findContact(contactID)
         this.contacts.splice(indexOfContact, 1)
         return User.contacts
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     createContactInfo(contactID, phoneNumber, email) {
+    try{
         if (this.isAdmin) {
-            return "Admin cannot create Contact details"
-        }
-        let [indexOfContact, isContact] = this.findContact(contactID)
-        if (!isContact) {
-            return "User not found"
-        }
-        return this.contacts[indexOfContact].createContactInfo(phoneNumber, email)
-    }
-    getContactInfo(contactID) {
-        if (this.isAdmin) {
-            return "Admin do not have contact information"
-        }
-        let [indexOfContact, isContact] = this.findContact(contactID)
-        if (!isContact) {
-            return "User not found"
-        }
-        return this.contacts[indexOfContact].getContactInfo()
-    }
-    updateContactInfo(contactID,contactInfoID, parameter, newValue) {
-        let [indexOfContact, isContact] = this.findContact(contactID)
-        if (!isContact) {
-            return "Contact  does not exist"
-        }
-        return this.contacts[indexOfContact].updateContactInfos(contactInfoID, parameter, newValue)
-    }
-    deleteContactInfo(contactID,contactInfoID) {
-        if (this.isAdmin) {
-            return "Only user can delete contact!"
+            throw new UnAuthorized("Only User can Access this method")
         }
         if (typeof contactID != 'number') {
-            return "Invalid contactID passed!"
+            throw new Validation("Not an Integer Value")
         }
-        let [indexOfContact, isContact] = this.findContact(contactID)
-        if (!isContact) {
-            return "No contact found. Contact does not exist";
+        if (typeof phoneNumber != 'number') {
+            throw new Validation("Not an Integer Value")
         }
+        let indexOfContact = this.findContact(contactID)
+        return this.contacts[indexOfContact].createContactInfo(phoneNumber, email)
+    }
+    catch(e){
+        console.log(e)
+    }
+    }
+    getContactInfo(contactID) {
+    try{
+        if (this.isAdmin) {
+            throw new UnAuthorized("Only User can Access this method")
+        }
+        if (typeof contactID != 'number') {
+            throw new Validation("Not an Integer Value")
+        }
+        let indexOfContact = this.findContact(contactID)
+        return this.contacts[indexOfContact].getContactInfo()
+    }
+    catch(e){
+        console.log(e)
+    }
+    }
+    updateContactInfo(contactID,contactInfoID, parameter, newValue) {
+    try{
+        if (this.isAdmin) {
+            throw new UnAuthorized("Only User can Access this method")
+        }
+        if (typeof contactID != 'number') {
+            throw new Validation("Not an Integer Value")
+        }
+        if (typeof contactInfoID != 'number') {
+            throw new Validation("Not an Integer Value")
+        }
+        let indexOfContact = this.findContact(contactID)
+        return this.contacts[indexOfContact].updateContactInfos(contactInfoID, parameter, newValue)
+    }
+    catch(e){
+        console.log(e)
+    }
+    }
+    deleteContactInfo(contactID,contactInfoID) {
+    try{
+        if (this.isAdmin) {
+            throw new UnAuthorized("Only User can Access this method")
+        }
+        if (typeof contactID != 'number') {
+            throw new Validation("Not an Integer Value")
+        }
+        if (typeof contactInfoID != 'number') {
+            throw new Validation("Not an Integer Value")
+        }
+        let indexOfContact = this.findContact(contactID)
         return this.contacts[indexOfContact].deleteContactInfo(contactInfoID)
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     getUserById(ID) {
+    try{
         if (!this.isAdmin) {
-            return "Not Authorized"
+            throw new UnAuthorized("Only Admin can Access this method")
         }
         if (typeof ID != 'number') {
-            return "Invalid contactID passed!"
+            throw new Validation("Not an Integer Value")
         }
-        let [indexOfUser, isUserExist] = User.findUser(ID)
-        if(!isUserExist){
-            return "User Not Found"
-        }
+        let indexOfUser = User.findUser(ID)
         return User.allUsers[indexOfUser]
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     getContactById(ID) {
+    try{
         if (this.isAdmin) {
-            return "Admin cannot access contacts"
+            throw new UnAuthorized("Only User can Access this method")
         }
         if (typeof ID != 'number') {
-            return "Invalid contactID passed!"
+            throw new Validation("Not an Integer Value")
         }
-        let [indexOfUser, isContactExist] = this.findContact(ID)
-        if(!isContactExist){
-            return "Contact Not Found"
-        }
+        let indexOfUser = this.findContact(ID)
         return this.contacts[indexOfUser]
     }
+    catch(e){
+        console.log(e)
+    }
+    }
     getContactInfoById(ID){
+    try{
         if (this.isAdmin) {
-            return "Admin cannot access contacts"
+            throw new UnAuthorized("Only User can Access this method")
         }
         if (typeof ID != 'number') {
-            return "Invalid contactID passed!"
+            throw new Validation("Not an Integer Value")
         }
-        let [indexOfUser, isContact] = this.findContact(ID)
-        if(!isContact){
-            return "Contact Not Found"
-        }
+        let indexOfUser = this.findContact(ID)
         return this.contacts[indexOfUser].getContactInfoById(ID)
+    }
+    catch(e){
+        console.log(e)
+    }
     }
 }
 
