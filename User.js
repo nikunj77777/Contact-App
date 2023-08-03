@@ -74,7 +74,6 @@ class User {
         } 
         for (let index = 0; index < User.allUsers.length; index++) {
             if (ID == User.allUsers[index].ID) {
-                console.log("User.allUsers[index]", User.allUsers[index].ID);
                 return index
             }
         }
@@ -164,7 +163,7 @@ class User {
         }
         for (let index = 0; index < this.contacts.length; index++) {
             if (this.contacts[index].ID == contactID) {
-                return [index, true]
+                return index
             }
         }
         throw new NotFound("ID not Found")
