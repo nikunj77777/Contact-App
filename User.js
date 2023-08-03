@@ -156,14 +156,14 @@ class User {
         }
         return this.contacts[indexOfContact].getContactInfo()
     }
-    updateContactInfo(contactID, parameter, newValue) {
+    updateContactInfo(contactID,contactInfoID, parameter, newValue) {
         let [indexOfContact, isContact] = this.findContact(contactID)
         if (!isContact) {
             return "Contact  does not exist"
         }
-        return this.contacts[indexOfContact].updateContactInfos(contactID, parameter, newValue)
+        return this.contacts[indexOfContact].updateContactInfos(contactInfoID, parameter, newValue)
     }
-    deleteContactInfo(contactID) {
+    deleteContactInfo(contactID,contactInfoID) {
         if (this.isAdmin) {
             return "Only user can delete contact!"
         }
@@ -174,7 +174,7 @@ class User {
         if (!isContact) {
             return "No contact found. Contact does not exist";
         }
-        return this.contacts[indexOfContact].deleteContactInfo(contactID)
+        return this.contacts[indexOfContact].deleteContactInfo(contactInfoID)
     }
     getUserById(ID) {
         if (!this.isAdmin) {
@@ -216,24 +216,7 @@ class User {
         return this.contacts[indexOfUser].getContactInfoById(ID)
     }
 }
-module.exports = User
-let admin = User.newAdmin("Nikunj Gandhi", "Male", 21)
-let user1 = admin.newUser("Aniket", "Male", 21)
-let user2 = admin.newUser("Dhruv", "Male", 21)
-let user3 = admin.newUser("Suswar", "Male", 21)
-user1.createContact("Nikunj", "Austrailia")
-user1.createContact("Suswar", "India")
-user1.createContactInfo(0, 9082722366, "nikunjmgandhi77@gmail.com")
-// console.log(user1)
-// // console.log("Printing Contact Info")
-// console.log(user1.getContactInfo(1))
-//  console.log(user1.updateContactInfo(0,"phoneNumber",1234568))
-//  console.log(user1.contacts[0].contactInfos)
 
-// console.log(admin.getAllUsers())
-console.log(admin.getUserById(3))
-console.log(user1.getContactById(0))
-console.log(user1.getContactInfoById(0))
 
 
 
