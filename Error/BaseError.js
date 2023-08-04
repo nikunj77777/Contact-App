@@ -1,7 +1,8 @@
-class BaseError{
-    constructor(message,HTTPStatus,specificMessage){
+class BaseError extends Error{
+    constructor(message,httpStatus,specificMessage){
+        super(message)
         this.message=message;
-        this.HTTPStatus=HTTPStatus;
+        this.httpStatus=httpStatus;
         this.specificMessage=specificMessage;
     }
 }

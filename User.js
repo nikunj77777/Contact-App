@@ -322,6 +322,14 @@ class User {
     }
 }
 
+let admin = User.newAdmin("Nikunj Gandhi","Male",21)
+let user1 = admin.newUser("Dhruv Katora","Male",21)
+user1.createContact("Aniket Mulik","India")
+user1.updateContact(0,"contactName","Suswar Sawant")
+user1.createContactInfo(0,9082722366,"aniket@gmail.com")
+user1.updateContactInfo(0,0,"phoneNumber",12345678)
+console.log(user1.contacts[0].contactInfos)
+
 
 
 
