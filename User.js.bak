@@ -80,7 +80,7 @@ class User {
         throw new NotFound("ID not Found")
     }
     catch(e){
-        throw e
+        console.log(e)
     }
     }
     updateUser(ID, parameter, newValue) {
@@ -169,7 +169,7 @@ class User {
         throw new NotFound("ID not Found")
     }
     catch(e){
-        throw e
+        console.log(e)
     }
     }
     updateContact(contactID, parameter, newValue) {
